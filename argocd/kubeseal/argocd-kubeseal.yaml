@@ -9,7 +9,7 @@ spec:
     namespace: kubeseal-app
     server: 'https://kubernetes.default.svc'
   source:
-    path: sealed-secrets/kubeseal-app
+    path: argocd/kubeseal-app
     repoURL: 'https://github.com/obynodavid12/sealed-secrets.git'
     targetRevision: HEAD
     directory:
