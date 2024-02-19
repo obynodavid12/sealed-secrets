@@ -23,11 +23,18 @@ spec:
       containers:
       - name: mysql
         image: mysql:latest
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysql-secret
-              key: password
+        # env:
+        # - name: MYSQL_ROOT_PASSWORD
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: mysql-secret
+        #       key: password
         ports:
         - containerPort: 3306
+        volumeMounts:
+        - name: secret-volume
+          mountPath: /secrets/
+        volumes:
+        - name: secret-volume
+          secret:
+            secretName: mysql-secret
