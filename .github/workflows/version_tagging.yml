@@ -1,0 +1,54 @@
+name: App Version Actions
+on: 
+ push: 
+   branches: [ master ]
+ pull_request:
+   branches: [ master ]
+   paths:
+     - 'sealed-secrets/**'
+     - 'sealed-secrets-lab/**'
+jobs:
+  changes:
+    name: Detect Changes in folder
+    runs-on: ubuntu-latest
+    outputs:
+      names: ${{ steps.filter.outputs.changes }}
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+         fetch-depth: '0'
+    - name: Detect Changes
+      uses: dorny/paths-filter@v2
+      id: filter
+      with:
+         filters: |
+           sealed-secrets:
+            - 'sealed-secrets/**'
+           sealed-secrets-lab:
+            - 'sealed-secrets-lab/**'    
+  deploy:
+    needs: changes
+    if: ${{ needs.changes.outputs.names != '[]' }}
+    name:  ${{matrix.name}} - ${{ matrix.environment }}
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      matrix: 
+         name: ${{fromJson(needs.changes.outputs.names)}}
+         environment: [ test ]    
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ matrix.name }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Increment version
+      id: version   
+      uses: ./.github/actions/
+      with:
+        file_name: '${{ matrix.name }}/VERSION'
+        tag_version: "true"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
