@@ -1,19 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: sealed-secret
-  namespace: argocd
+  name: sealedsecret
 spec:
   destination:
     name: ''
-    namespace: kubeseal-app
+    namespace: default
     server: 'https://kubernetes.default.svc'
   source:
-    path: argocd/kubeseal-app
-    repoURL: 'https://github.com/obynodavid12/sealed-secrets.git'
-    targetRevision: HEAD
+    path: .
+    repoURL: 'https://github.com/obynodavid12/sealed-secrets'
+    targetRevision: master
     directory:
-      recurse: true
+      recurse: false
   sources: []
   project: default
   syncPolicy:
